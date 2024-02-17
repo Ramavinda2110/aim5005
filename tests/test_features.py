@@ -51,6 +51,7 @@ class TestFeatures(TestCase):
         data = [[0, 0], [0, 0], [1, 1], [1, 1]]
         expected = np.array([[-1., -1.], [-1., -1.], [1., 1.], [1., 1.]])
         scaler.fit(data)
+        result = scaler.transform(data)
         assert (result == expected).all(), "Scaler transform does not return expected values. Expect {}. Got: {}".format(expected.reshape(1,-1), result.reshape(1,-1))
         
     def test_standard_scaler_single_value(self):
@@ -62,6 +63,27 @@ class TestFeatures(TestCase):
         assert (result == expected).all(), "Scaler transform does not return expected values. Expect {}. Got: {}".format(expected.reshape(1,-1), result.reshape(1,-1))
 
     # TODO: Add a test of your own below this line
+    def test_standard_scaler_negative_values(self):
+        
+        scaler = StandardScaler()
+        
+        data = [[-1, -1], [0, 0], [1, 1], [2, 2]]
+        
+        expected_mean = np.array([0.5, 0.5])
+        
+        expected_result = np.array([[-1.34164079, -1.34164079], [-0.4472136 , -0.4472136 ],
+                                    [ 0.4472136 ,  0.4472136 ], [ 1.34164079,  1.34164079]])
+        
+        scaler.fit(data)
     
+        assert np.allclose(scaler.mean, expected_mean), \
+            f"Scaler fit does not return expected mean {expected_mean}. Got {scaler.mean}"
+        
+        result = scaler.transform(data)
+        
+        assert np.allclose(result, expected_result), \
+            f"Scaler transform does not return expected values. Expect {expected_result}. Got: {result}"
+
+        
 if __name__ == '__main__':
     unittest.main()
